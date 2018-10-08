@@ -1,0 +1,53 @@
+server {
+    listen 80{% if item.enable_http2|default(true) %} http2{% endif %};
+    {% if item.enable_ssl -%}
+    listen 443 ssl;
+    {% endif -%}
+    server_name  {{ item.server_name }} {{ item.server_aliases|default([])|join(" ") }};
+    {% if item.redirect is defined and item.redirect != "" -%}
+    return 301 $scheme://{{ item.redirect }}$request_uri;
+    {% else -%}
+    charset utf-8;
+    root   {{ item.document_root }}/current/public;
+    index  index.html index.htm index.php;
+    access_log  {{ openresty_log_path }}/{{ item.server_name }}.access.log json;
+    error_log   {{ openresty_log_path }}/{{ item.server_name }}.error.log warn;
+
+    {% if item.enable_ssl -%}
+    ssl_ciphers         EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
+    ssl_protocols       TLSv1.1 TLSv1.2;
+    ssl_certificate     /usr/local/openresty/nginx/conf/certs/{{ item.server_name }}.cert.pem;
+    ssl_certificate_key /usr/local/openresty/nginx/conf/certs/{{ item.server_name }}.key.pem;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+    {% endif -%}
+
+    location / {
+        {% if item.enable_fpm -%}
+        try_files $uri $uri/ /index.php$is_args$args;
+        {% else -%}
+        try_files $uri uri/ /{{ item.index|default("index.html") }} = 404;
+        {% endif -%}
+    }
+
+    error_page  404              /404.html;
+    location = /40x.html {
+        root   /usr/local/openresty/nginx/html;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/local/openresty/nginx/html;
+    }
+
+    {% if item.enable_fpm -%}
+    location ~ \.php$ {
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi.conf;
+    }
+    {% endif -%}
+
+    {% endif -%}
+}
