@@ -21,6 +21,26 @@
   tags:
     - install
 
+- name: Ensure nginx group exists
+  group:
+    name: nginx
+    system: yes
+    state: present
+  tags:
+    - user
+
+- name: Ensure nginx user exists
+  user: 
+    name: nginx 
+    shell: /sbin/nologin 
+    home: /var/cache/nginx 
+    system: yes 
+    group: nginx 
+    move_home: yes 
+    state: present
+  tags:
+    - user
+
 - name: Create openresty directorys
   file:
     path: '{{ item }}'
