@@ -1,14 +1,14 @@
 server {
-    listen 80{% if item.enable_http2|default(true) %} http2{% endif %};
+    listen 80{% if item.enable_http2|default(false) %} http2{% endif %};
     {% if item.enable_ssl -%}
-    listen 443 ssl;
+    listen 443 ssl{% if item.enable_http2|default(false) %} http2{% endif %};
     {% endif -%}
-    server_name  {{ item.server_name }} {{ item.server_aliases|default([])|join(" ") }};
+    server_name  {{ item.server_name }}{% if item.server_aliases is defined and item.server_aliases|length >= 1 %} {{ item.server_aliases | join(" ") }}{% endif %};
     {% if item.redirect is defined and item.redirect != "" -%}
     return 301 $scheme://{{ item.redirect }}$request_uri;
     {% else -%}
     charset utf-8;
-    root   {{ item.document_root }}/current/public;
+    root   {{ item.document_root }};
     index  index.html index.htm index.php;
     access_log  {{ openresty_log_path }}/{{ item.server_name }}.access.log json;
     error_log   {{ openresty_log_path }}/{{ item.server_name }}.error.log warn;
@@ -29,6 +29,10 @@ server {
         try_files $uri uri/ /{{ item.index|default("index.html") }} = 404;
         {% endif -%}
     }
+
+    {% if item.extra_parameters -%}
+    {{ item.extra_parameters }}
+    {% endif -%}
 
     error_page  404              /404.html;
     location = /40x.html {

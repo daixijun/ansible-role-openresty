@@ -1,7 +1,7 @@
 ---
 - name: reload openresty
   systemd:
-    name: openresty.service
+    name: openresty
     state: reloaded
     enabled: yes
     daemon_reload: yes

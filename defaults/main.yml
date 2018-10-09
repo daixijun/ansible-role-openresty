@@ -17,3 +17,4 @@ openresty_vhosts: []
   #   enable_fpm:  true
   #   filename: www.baidu.com.conf
   #   redirect: www.verystar.cn
+  #   extra_parameters: 

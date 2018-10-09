@@ -45,7 +45,29 @@
   file:
     path: '{{ item }}'
     state: directory
+    recurse: yes
     owner: nginx
     group: nginx
   loop:
     - '{{ openresty_log_path }}'
+    - /usr/local/openresty/nginx/conf/vhost.d
+    - /usr/share/nginx/
+
+- name: Create default vhost config
+  template:
+    src: default.conf.j2
+    dest: /usr/local/openresty/nginx/conf/vhost.d/default.conf
+  notify:
+    - reload openresty
+  tags:
+    - config
+
+- name: Create Web vhost config
+  template:
+    src: vhost.conf.j2
+    dest: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
+  loop: '{{ openresty_vhosts }}'
+  notify:
+    - reload openresty
+  tags:
+    - config
