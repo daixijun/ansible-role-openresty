@@ -32,7 +32,7 @@ server {
         try_files $uri $uri/ /{{ item.index|default("index.php") }}$is_args$args = 404;
     }
 
-    {% if item.extra_parameters -%}
+    {% if item.extra_parameters is defined -%}
     {{ item.extra_parameters }}
     {% endif -%}
 
