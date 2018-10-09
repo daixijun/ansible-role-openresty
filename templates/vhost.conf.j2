@@ -1,19 +1,25 @@
+# {{ ansible_managed }}
+{% if item.force_https|default(false)  %}
 server {
-    listen 80{% if item.enable_http2|default(false) %} http2{% endif %};
-    {% if item.enable_ssl -%}
-    listen 443 ssl{% if item.enable_http2|default(false) %} http2{% endif %};
+    # Redirect all requests to HTTPS
+    listen 80;
+    server_name {{ item.server_name }};
+    return 301 https://$host$request_uri;
+}
+{% else %}
+server {
+    listen 80;
+    {% if item.enable_ssl|default(false) -%}
+    listen 443 ssl;
     {% endif -%}
-    server_name  {{ item.server_name }}{% if item.server_aliases is defined and item.server_aliases|length >= 1 %} {{ item.server_aliases | join(" ") }}{% endif %};
-    {% if item.redirect is defined and item.redirect != "" -%}
-    return 301 $scheme://{{ item.redirect }}$request_uri;
-    {% else -%}
+    server_name  {{ item.server_name }};
     charset utf-8;
-    root   {{ item.document_root }};
+    root   {{ item.document_root|default("/usr/share/nginx/" + item.server_name + "/current/") }};
     index  index.html index.htm index.php;
     access_log  {{ openresty_log_path }}/{{ item.server_name }}.access.log json;
     error_log   {{ openresty_log_path }}/{{ item.server_name }}.error.log warn;
 
-    {% if item.enable_ssl -%}
+    {% if item.enable_ssl|default(false) -%}
     ssl_ciphers         EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
     ssl_protocols       TLSv1.1 TLSv1.2;
     ssl_certificate     /usr/local/openresty/nginx/conf/certs/{{ item.server_name }}.cert.pem;
@@ -23,11 +29,7 @@ server {
     {% endif -%}
 
     location / {
-        {% if item.enable_fpm -%}
-        try_files $uri $uri/ /index.php$is_args$args;
-        {% else -%}
-        try_files $uri uri/ /{{ item.index|default("index.html") }} = 404;
-        {% endif -%}
+        try_files $uri $uri/ /{{ item.index|default("index.php") }}$is_args$args = 404;
     }
 
     {% if item.extra_parameters -%}
@@ -44,7 +46,7 @@ server {
         root   /usr/local/openresty/nginx/html;
     }
 
-    {% if item.enable_fpm -%}
+    {% if item.enable_fpm|default(true) -%}
     location ~ \.php$ {
         fastcgi_pass   127.0.0.1:9000;
         fastcgi_index  index.php;
@@ -52,6 +54,5 @@ server {
         include        fastcgi.conf;
     }
     {% endif -%}
-
-    {% endif -%}
 }
+{% endif %}

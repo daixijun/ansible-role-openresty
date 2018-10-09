@@ -71,3 +71,10 @@
     - reload openresty
   tags:
     - config
+
+- name: Ensure openresty started
+  systemd:
+    name: openresty
+    state: started
+    enabled: yes
+    daemon_reload: yes

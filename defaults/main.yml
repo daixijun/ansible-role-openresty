@@ -7,14 +7,8 @@ openresty_log_path: /var/log/nginx/
 
 openresty_vhosts: []
   # - server_name: www.baidu.com
-  #   enable_http2: true
   #   enable_ssl: false
-  #   server_aliases:
-  #     - www.google.com
-  #     - www.taobao.com
   #   index: main.html
   #   document_root: /usr/share/nginx/www.baidu.com/
   #   enable_fpm:  true
-  #   filename: www.baidu.com.conf
-  #   redirect: www.verystar.cn
   #   extra_parameters: 
