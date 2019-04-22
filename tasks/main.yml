@@ -15,7 +15,6 @@
   yum:
     name: openresty,openresty-resty,openresty-opm
     state: present
-    # autoremove: true
     update_cache: true
   tags:
     - install
@@ -49,7 +48,8 @@
     group: nginx
   loop:
     - '{{ openresty_log_path }}'
-    - /usr/local/openresty/nginx/conf/vhost.d
+    - /usr/local/openresty/nginx/conf/vhost.d/
+    - /usr/local/openresty/nginx/conf/certs/
     - /usr/share/nginx/
 
 - name: Create nginx.conf
@@ -85,6 +85,34 @@
     - reload openresty
   tags:
     - config
+
+- name: Create ssl certificate
+  copy:
+    src: "{{ item.ssl_certificate }}"
+    dest: "/usr/local/openresty/nginx/conf/certs/{{ item.server_name }}.cert.pem"
+  when:
+    - openresty_vhosts is defined
+    - openresty_vhosts|length > 0
+    - item.enable_ssl is defined
+    - item.enable_ssl | default(false)
+    - item.ssl_certificate is defined
+  loop: "{{ openresty_vhosts }}"
+  notify:
+    - reload openresty
+
+- name: Create ssl certificate key
+  copy:
+    src: "{{ item.ssl_certificate_key }}"
+    dest: "/usr/local/openresty/nginx/conf/certs/{{ item.server_name }}.key.pem"
+  when:
+    - openresty_vhosts is defined
+    - openresty_vhosts|length > 0
+    - item.enable_ssl is defined
+    - item.enable_ssl | default(false)
+    - item.ssl_certificate_key is defined
+  loop: "{{ openresty_vhosts }}"
+  notify:
+    - reload openresty
 
 - name: Create systemd service
   copy:

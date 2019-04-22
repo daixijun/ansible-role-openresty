@@ -19,8 +19,14 @@ def test_openresty_running_and_enabled(host):
     assert srv.is_enabled
 
 
-def test_openresty_listening(host):
+def test_openresty_http_listening(host):
     s = host.socket("tcp://0.0.0.0:80")
+
+    assert s.is_listening
+
+
+def test_openresty_https_listening(host):
+    s = host.socket("tcp://0.0.0.0:443")
 
     assert s.is_listening
 
