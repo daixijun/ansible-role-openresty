@@ -1,12 +1,4 @@
 # {{ ansible_managed }}
-{% if item.force_https|default(false)  %}
-server {
-    # Redirect all requests to HTTPS
-    listen 80;
-    server_name {{ item.server_name }};
-    return 301 https://$host$request_uri;
-}
-{% else %}
 server {
     listen 80;
     {% if item.enable_ssl|default(false) -%}
@@ -18,6 +10,12 @@ server {
     index  index.html index.htm index.php;
     access_log  {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.access.log main;
     error_log   {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.error.log warn;
+
+    {% if item.force_https|default(false) -%}
+    if ($scheme = 'http') {
+        return 301 https://$host$request_uri;
+    }
+    {% endif -%}
 
     {% if item.enable_ssl|default(false) -%}
     ssl_ciphers         EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH;
@@ -55,4 +53,3 @@ server {
     }
     {% endif -%}
 }
-{% endif %}
