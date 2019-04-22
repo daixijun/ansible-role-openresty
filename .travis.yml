@@ -2,6 +2,9 @@
 language: python
 sudo: required
 
+env:
+  - ANSIBLE_VAULT_PASSWORD_FILE=.vault.txt
+
 services:
   - docker
 
