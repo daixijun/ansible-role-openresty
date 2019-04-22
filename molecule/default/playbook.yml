@@ -8,6 +8,6 @@
           enable_ssl: true
           ssl_certificate: certs/server.crt
           ssl_certificate_key: certs/server.key
-        # index: index.php
-        # document_root: /usr/share/nginx/www.example.com/current
-        # enable_fpm: true
+          # index: index.php
+          # document_root: /usr/share/nginx/www.example.com/current
+          # enable_fpm: true
