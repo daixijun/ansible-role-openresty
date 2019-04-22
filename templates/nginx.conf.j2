@@ -11,14 +11,9 @@ events {
 }
 
 http {
-    include       mime.types;
+    include       /usr/local/openresty/nginx/conf/mime.types;
     default_type  application/octet-stream;
-    log_format  main  '$server_addr $remote_addr "$http_x_forwarded_for" '
-                      '- $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" $request_time "$request_filename"';
-
-    log_format  json  '{"server_addr":"$server_addr",'
+    log_format  main  '{"server_addr":"$server_addr",'
                       '"remote_addr":"$remote_addr",'
                       '"http_x_forwarded_for":"$http_x_forwarded_for",'
                       '"server_name":"$server_name",'
@@ -33,19 +28,19 @@ http {
                       '"request_body":"$request_body",'
                       '"request_body_file":"$request_body_file",'
                       '"request_content_type":"$content_type",'
-                      '"request_time":$request_time,'
+                      '"request_time":"$request_time",'
                       '"request_id":"$request_id",' # supported by nginx 1.11.0
                       '"scheme":"$scheme",'
                       '"server_protocol":"$server_protocol",'
-                      '"http_status":$status,'
+                      '"http_status":"$status",'
                       '"sent_http_content_length":"$sent_http_content_length",'
-                      '"body_bytes_sent":$body_bytes_sent,'
+                      '"body_bytes_sent":"$body_bytes_sent",'
                       '"http_referer":"$http_referer",'
                       '"http_user_agent":"$http_user_agent",'
-                      '"upstream_response_time":$upstream_response_time,'
-                      '"upstream_status":$upstream_status,'
-                      '"upstream_connect_time":$upstream_connect_time,'
-                      '"upstream_header_time":$upstream_header_time,'
+                      '"upstream_response_time":"$upstream_response_time",'
+                      '"upstream_status":"$upstream_status",'
+                      '"upstream_connect_time":"$upstream_connect_time",'
+                      '"upstream_header_time":"$upstream_header_time",'
                       '"request_filename":"$request_filename"}';
 
     sendfile       on;

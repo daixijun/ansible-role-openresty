@@ -16,7 +16,7 @@ server {
     charset utf-8;
     root   {{ item.document_root|default("/usr/share/nginx/" + item.server_name + "/current/") }};
     index  index.html index.htm index.php;
-    access_log  {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.access.log json;
+    access_log  {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.access.log main;
     error_log   {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.error.log warn;
 
     {% if item.enable_ssl|default(false) -%}

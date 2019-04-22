@@ -8,7 +8,6 @@
     gpgcheck: yes
     gpgkey: https://openresty.org/package/pubkey.gpg
     state: present
-  diff: true
   tags:
     - always
 
@@ -16,7 +15,7 @@
   yum:
     name: openresty,openresty-resty,openresty-opm
     state: present
-    autoremove: true
+    # autoremove: true
     update_cache: true
   tags:
     - install
@@ -30,13 +29,13 @@
     - user
 
 - name: Ensure nginx user exists
-  user: 
-    name: nginx 
-    shell: /sbin/nologin 
-    home: /var/cache/nginx 
-    system: yes 
-    group: nginx 
-    move_home: yes 
+  user:
+    name: nginx
+    shell: /sbin/nologin
+    home: /var/cache/nginx
+    system: yes
+    group: nginx
+    move_home: yes
     state: present
   tags:
     - user
@@ -45,7 +44,7 @@
   file:
     path: '{{ item }}'
     state: directory
-    recurse: yes
+    recurse: false
     owner: nginx
     group: nginx
   loop:
@@ -53,10 +52,22 @@
     - /usr/local/openresty/nginx/conf/vhost.d
     - /usr/share/nginx/
 
+- name: Create nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/openresty/nginx/conf/nginx.conf
+    validate: /usr/local/openresty/nginx/sbin/nginx -t -c %s
+  notify:
+    - reload openresty
+  tags:
+    - config
+
 - name: Create default vhost config
   template:
     src: default.conf.j2
     dest: /usr/local/openresty/nginx/conf/vhost.d/default.conf
+  when:
+    - not openresty_allow_non_servername
   notify:
     - reload openresty
   tags:
@@ -67,14 +78,34 @@
     src: vhost.conf.j2
     dest: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
   loop: '{{ openresty_vhosts }}'
+  when:
+    - openresty_vhosts is defined
+    - openresty_vhosts|length > 0
   notify:
     - reload openresty
   tags:
     - config
 
-- name: Ensure openresty started
+- name: Create systemd service
+  copy:
+    src: openresty.service
+    dest: /usr/lib/systemd/system/openresty.service
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 7
+  register: create_systemd_service
+
+- name: daemon reload
   systemd:
+    name: openrety
+    daemon_reload: true
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 7
+    - create_systemd_service is changed
+
+- name: Ensure openresty started
+  service:
     name: openresty
     state: started
     enabled: yes
-    daemon_reload: yes

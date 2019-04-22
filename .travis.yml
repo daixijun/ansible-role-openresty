@@ -1,29 +1,21 @@
 ---
-dist: trusty
 language: python
-python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
+sudo: required
 
-# Use the new container infrastructure
-sudo: false
+services:
+  - docker
 
-# Install ansible
+before_script:
+  - cd ../
+  - mv ansible-role-openresty daixijun.openresty
+  - cd daixijun.openresty
+
 install:
-  # Install ansible
-  - pip install ansible
-
-  # Check ansible version
-  - ansible --version
-
-  # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - pip install ansible molecule docker
 
 script:
-  # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  - molecule test
 
 notifications:
-  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+  webhooks:
+    - https://galaxy.ansible.com/api/v1/notifications/

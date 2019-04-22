@@ -6,9 +6,9 @@ openresty_allow_non_servername: false
 openresty_log_path: /var/log/nginx/
 
 openresty_vhosts: []
-  # - server_name: www.baidu.com
-  #   enable_ssl: false
-  #   index: main.html
-  #   document_root: /usr/share/nginx/www.baidu.com/
-  #   enable_fpm:  true
-  #   extra_parameters: 
+# - server_name: www.baidu.com
+#   enable_ssl: false
+#   index: main.html
+#   document_root: /usr/share/nginx/www.baidu.com/
+#   enable_fpm: true
+#   extra_parameters:

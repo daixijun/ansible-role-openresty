@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: daixijun.openresty
+      openresty_vhosts:
+        - server_name: www.example.com
+        # enable_ssl: false
+        # index: index.php
+        # document_root: /usr/share/nginx/www.example.com/current
+        # enable_fpm: true
