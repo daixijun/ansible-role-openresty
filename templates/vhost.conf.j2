@@ -27,7 +27,7 @@ server {
     {% endif -%}
 
     location / {
-        try_files $uri $uri/ /{{ item.index|default("index.php") }}$is_args$args = 404;
+        try_files $uri $uri/ /{{ item.index|default("index.php") }}$is_args$args;
     }
 
     {% if item.extra_parameters is defined -%}
