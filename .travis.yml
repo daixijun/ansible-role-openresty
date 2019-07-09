@@ -1,7 +1,8 @@
 ---
+dist: xenial
 language: python
 sudo: required
-
+python: '3.7'
 env:
   - ANSIBLE_VAULT_PASSWORD_FILE=.vault.txt
 
@@ -15,6 +16,7 @@ before_script:
 
 install:
   - pip install ansible molecule docker
+  - pip install --upgrade testinfra
 
 script:
   - molecule test
