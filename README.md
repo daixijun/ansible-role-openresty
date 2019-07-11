@@ -15,22 +15,7 @@ Requirements
 Role Variables
 --------------
 
-```yaml
-openresty_proxy_timeout: 10
-openresty_keepalive_timeout: 60
-# 是否允许不通过域名，直接使用IP地址进行访问
-openresty_allow_non_servername: false
-openresty_log_path: /var/log/nginx/
-
-openresty_vhosts: []
-# - server_name: www.baidu.com
-#   enable_ssl: false
-#   index: main.html
-#   document_root: /usr/share/nginx/www.baidu.com/
-#   enable_fpm: true
-#   extra_parameters:
-
-```
+[默认参数](defaults/main.yml)
 
 Dependencies
 ------------

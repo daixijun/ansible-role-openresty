@@ -62,25 +62,32 @@
   tags:
     - config
 
-- name: Create default vhost config
+- name: Create managed default server configuration file
   template:
     src: default.conf.j2
     dest: /usr/local/openresty/nginx/conf/vhost.d/default.conf
-  when:
-    - not openresty_allow_non_servername
   notify:
     - reload openresty
   tags:
     - config
 
-- name: Create Web vhost config
+- name: Create managed virtual host configuration files
   template:
     src: vhost.conf.j2
     dest: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
+  when: item.state|default('present') == 'present'
   loop: '{{ openresty_vhosts }}'
-  when:
-    - openresty_vhosts is defined
-    - openresty_vhosts|length > 0
+  notify:
+    - reload openresty
+  tags:
+    - config
+
+- name: Remove managed virtual host configuration files
+  file:
+    path: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
+    state: absent
+  when: item.state|default('present') == 'absent'
+  loop: '{{ openresty_vhosts }}'
   notify:
     - reload openresty
   tags:
