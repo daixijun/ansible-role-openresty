@@ -42,7 +42,7 @@ openresty_log_format: |-
   '"request_filename":"$request_filename"}'
 openresty_access_log: "off"
 openresty_error_log: "{{ openresty_log_path }}/nginx.error.log crit"
-
+openresty_server_names_hash_bucket_size: 64
 openresty_vhosts: []
 # - server_name: www.baidu.com
 #   enable_ssl: false

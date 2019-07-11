@@ -21,6 +21,7 @@ http {
     access_log     {{ openresty_access_log }};
     error_log      {{ openresty_error_log }};
 
+    server_names_hash_bucket_size {{ openresty_server_names_hash_bucket_size }};
     server_tokens      off;
     keepalive_timeout  {{ openresty_keepalive_timeout }};
     client_header_timeout {{ openresty_proxy_timeout }};
