@@ -19,21 +19,21 @@
   tags:
     - install
 
-- name: Ensure nginx group exists
+- name: Ensure {{ openresty_user }} group exists
   group:
-    name: nginx
+    name: "{{ openresty_user }}"
     system: yes
     state: present
   tags:
     - user
 
-- name: Ensure nginx user exists
+- name: Ensure {{ openresty_user }} user exists
   user:
-    name: nginx
+    name: "{{ openresty_user }}"
     shell: /sbin/nologin
     home: /var/cache/nginx
     system: yes
-    group: nginx
+    group: "{{ openresty_user }}"
     move_home: yes
     state: present
   tags:
@@ -44,8 +44,8 @@
     path: '{{ item }}'
     state: directory
     recurse: false
-    owner: nginx
-    group: nginx
+    owner: "{{ openresty_user }}"
+    group: "{{ openresty_user }}"
   loop:
     - '{{ openresty_log_path }}'
     - /usr/local/openresty/nginx/conf/vhost.d/

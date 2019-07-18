@@ -1,5 +1,10 @@
 #jinja2:lstrip_blocks: True
 # {{ ansible_managed }}
+{% if item.enable_fpm is defined and item.enable_fpm %}
+{% set default_locations = [dict(path='/', config='try_files $uri $uri/ /index.php$is_args$args;')] %}
+{% else %}
+{% set default_locations = [dict(path='/', config='try_files $uri $uri/ /main.html /index.html = 404;')] %}
+{% endif %}
 server {
     listen 80;
     {% if item.enable_ssl|default(false) %}
@@ -27,7 +32,7 @@ server {
     ssl_session_timeout 10m;
     {% endif %}
 
-    {% for loc in item.locations|default([dict(path='/', config='try_files $uri $uri/ /index.php$is_args$args;')]) %}
+    {% for loc in item.locations|default(default_locations) %}
     location {{ loc.path }} {
         {{ loc.config|indent(8) }}
     }
@@ -47,7 +52,7 @@ server {
         root   /usr/local/openresty/nginx/html;
     }
 
-    {% if item.enable_fpm|default(true) %}
+    {% if item.enable_fpm|default(false) %}
     location ~ \.php$ {
         fastcgi_pass   127.0.0.1:9000;
         fastcgi_index  index.php;
