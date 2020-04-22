@@ -41,13 +41,13 @@
 
 - name: Create openresty directorys
   file:
-    path: '{{ item }}'
+    path: "{{ item }}"
     state: directory
     recurse: false
     owner: "{{ openresty_user }}"
     group: "{{ openresty_user }}"
   loop:
-    - '{{ openresty_log_path }}'
+    - "{{ openresty_log_path }}"
     - /usr/local/openresty/nginx/conf/vhost.d/
     - /usr/local/openresty/nginx/conf/certs/
     - /usr/share/nginx/
@@ -76,7 +76,7 @@
     src: vhost.conf.j2
     dest: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
   when: item.state|default('present') == 'present'
-  loop: '{{ openresty_vhosts }}'
+  loop: "{{ openresty_vhosts }}"
   notify:
     - restart openresty
   tags:
@@ -87,7 +87,7 @@
     path: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
     state: absent
   when: item.state|default('present') == 'absent'
-  loop: '{{ openresty_vhosts }}'
+  loop: "{{ openresty_vhosts }}"
   notify:
     - restart openresty
   tags:
@@ -121,26 +121,12 @@
   notify:
     - restart openresty
 
-- name: Create systemd service
+- name: Startup systemd service
   copy:
     src: openresty.service
     dest: /usr/lib/systemd/system/openresty.service
   when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version|int >= 7
-  register: create_systemd_service
-
-- name: daemon reload
-  systemd:
-    name: openrety
-    daemon_reload: true
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 7
-    - create_systemd_service is changed
-
-- name: Ensure openresty started
-  service:
-    name: openresty
-    state: started
-    enabled: yes
+  notify:
+    - restart openresty
