@@ -1,29 +1,25 @@
-Ansible Role: openresty
-=========
+# daixijun.openresty
 
-[![Build Status](https://travis-ci.org/daixijun/ansible-role-openresty.svg?branch=master)](https://travis-ci.org/daixijun/ansible-role-openrety)
+[![Build Status](https://github.com/daixijun/ansible-role-openresty/workflows/build/badge.svg)](https://github.com/daixijun/ansible-role-openresty/actions)
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-daixijun.openresty-660198.svg?style=flat)](https://galaxy.ansible.com/daixijun/openresty/)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/daixijun/ansible-role-openresty?sort=semver)](https://github.com/daixijun/ansible-role-openresty/tags)
 
-Web server openrety for Centos
+Ansible安装配置OpenResty
 
-Requirements
-------------
+## 环境要求
 
-- Centos 6
-- Centos 7
+- RHEL/Centos 6+
 - Ansible 2.5+
 
-Role Variables
---------------
+## 变量
 
-[默认参数](defaults/main.yml)
+参考[defaults](defaults/main.yml)
 
-Dependencies
-------------
+## 依赖
 
 None
 
-Example Playbook
-----------------
+## 示例
 
 ```yaml
 - hosts: servers
@@ -31,13 +27,10 @@ Example Playbook
     - { role: daixijun.openresty }
 ```
 
-License
--------
+## License
 
 BSD
 
-Author Information
-------------------
+## 维护者
 
-Author: Xijun Dai
-Email: daixijun1990@gmail.com
+- Xijun Dai <daixijun1990@gmail.com>
