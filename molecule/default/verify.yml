@@ -1,0 +1,24 @@
+---
+- name: Verify
+  hosts: all
+  any_errors_fatal: True
+  tasks:
+    - name: Gather packages
+      package_facts:
+        manager: auto
+      no_log: true
+
+    - name: Assert that package openresty is installed
+      assert:
+        that:
+          - "'openresty' in ansible_facts.packages"
+
+    - name: Gather services
+      service_facts:
+      no_log: True
+
+    - name: Assert that service openresty is running
+      assert:
+        that:
+          - "'openresty.service' in ansible_facts.services"
+          - ansible_facts.services['openresty.service'].state == 'running'

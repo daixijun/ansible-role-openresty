@@ -3,18 +3,13 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
+lint: |
+  set -xe
+  yamllint .
+  ansible-lint .
 platforms:
-  - name: centos7
-    image: geerlingguy/docker-centos7-ansible
-    command: ""
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
-  - name: centos6
-    image: geerlingguy/docker-centos6-ansible
+  - name: openresty
+    image: geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible
     command: ""
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -22,9 +17,7 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
+  ansible_args:
+    - --vault-password-file=.vault.txt
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible
