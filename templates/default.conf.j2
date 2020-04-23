@@ -1,13 +1,13 @@
 server {
     listen 80 default_server;
     server_name _;
-{% if not openresty_allow_non_servername %}
+    {% if not openresty_allow_non_servername %}
     return 403;
-{% else %}
+    {% else %}
     location / {
         content_by_lua_block {
             ngx.say("It works")
         }
     }
-{% endif %}
+    {% endif %}
 }

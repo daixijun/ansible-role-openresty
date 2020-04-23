@@ -56,6 +56,7 @@
   template:
     src: nginx.conf.j2
     dest: /usr/local/openresty/nginx/conf/nginx.conf
+    lstrip_blocks: True
     validate: /usr/local/openresty/nginx/sbin/nginx -t -c %s
   notify:
     - restart openresty
@@ -66,6 +67,7 @@
   template:
     src: default.conf.j2
     dest: /usr/local/openresty/nginx/conf/vhost.d/default.conf
+    lstrip_blocks: True
   notify:
     - restart openresty
   tags:
@@ -74,7 +76,8 @@
 - name: Create managed virtual host configuration files
   template:
     src: vhost.conf.j2
-    dest: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
+    dest: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename|default(item.server_name) }}.conf
+    lstrip_blocks: True
   when: item.state|default('present') == 'present'
   loop: "{{ openresty_vhosts }}"
   notify:
@@ -84,7 +87,7 @@
 
 - name: Remove managed virtual host configuration files
   file:
-    path: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename | default(item.server_name) }}.conf
+    path: /usr/local/openresty/nginx/conf/vhost.d/{{ item.filename|default(item.server_name) }}.conf
     state: absent
   when: item.state|default('present') == 'absent'
   loop: "{{ openresty_vhosts }}"

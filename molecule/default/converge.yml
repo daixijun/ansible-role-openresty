@@ -10,4 +10,12 @@
           ssl_certificate_key: certs/server.key
           # index: index.php
           # document_root: /usr/share/nginx/www.example.com/current
-          # enable_fpm: true
+          extra_parameters: |-
+            location / {
+                proxy_pass http://backend/;
+            }
+      openresty_upstreams:
+        - name: backend
+          strategy: ip_hash
+          servers:
+            - 127.0.0.1:8080 weight=10 max_fails=3 fail_timeout=10s

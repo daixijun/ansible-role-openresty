@@ -78,4 +78,26 @@ http {
     # open_file_cache_min_uses 2;
     # open_file_cache_errors on;
     include vhost.d/*.conf;
+
+    {% if openresty_upstreams | length > 0 %}
+    {% for upstream in openresty_upstreams %}
+    upstream {{ upstream.name }} {
+        {% if upstream.strategy|default('') %}
+        {{ upstream.strategy }};
+        {% endif %}
+        {% for server in upstream.servers %}
+        server  {{ server }};
+        {% endfor %}
+        {% if upstream.keepalive|default('') %}
+        {{ upstream.keepalive }};
+        {% endif %}
+        {% if upstream.keepalive_timeout|default('') %}
+        {{ upstream.keepalive_timeout }};
+        {% endif %}
+        {% if upstream.keepalive_requests|default('') %}
+        {{ upstream.keepalive_requests }};
+        {% endif %}
+    }
+    {% endfor %}
+    {% endif %}
 }

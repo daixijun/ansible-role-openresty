@@ -46,10 +46,21 @@ openresty_server_names_hash_bucket_size: 64
 openresty_vhosts: []
 # - server_name: www.baidu.com
 #   enable_ssl: false
+#   ssl_certificate: certs/server.crt
+#   ssl_certificate_key: certs/server.key
 #   index: main.html
 #   document_root: /usr/share/nginx/www.baidu.com/
 #   enable_fpm: true
-#   locations: []
-#     - path: /
-#       config: try_files $uri $uri/ /index.html;
-#   extra_parameters:
+#   extra_parameters: |-
+#     location / {
+#         proxy_pass http://backup/;
+#     }
+openresty_upstreams: []
+# - name: backend
+#   strategy: ip_hash # 会话保持方式,可选值: ip_hash/least_conn
+#   keepalive: 16 # 长连接，单个工作进程连接池大小
+#   keepalive_requests: 100 # 每个连接处理多少个请求
+#   keepalive_timeout: 60s
+#   services:
+#     - 127.0.0.1:8080 weight=10 max_fails=3 fail_timeout=10s
+#     - unix:/tmp/backend.sock

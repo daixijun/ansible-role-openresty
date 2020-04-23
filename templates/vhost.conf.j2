@@ -1,10 +1,4 @@
-#jinja2:lstrip_blocks: True
 # {{ ansible_managed }}
-{% if item.enable_fpm is defined and item.enable_fpm %}
-{% set default_locations = [dict(path='/', config='try_files $uri $uri/ /index.php$is_args$args;')] %}
-{% else %}
-{% set default_locations = [dict(path='/', config='try_files $uri $uri/ /main.html /index.html = 404;')] %}
-{% endif %}
 server {
     listen 80;
     {% if item.enable_ssl|default(false) %}
@@ -13,7 +7,7 @@ server {
     server_name  {{ item.server_name }};
     charset utf-8;
     root   {{ item.document_root|default("/usr/share/nginx/" + item.server_name + "/current/") }};
-    index  {{ item.index|default('index.html index.htm index.php') }};
+    index  {{ item.index|default('main.html index.html index.htm index.php') }};
     access_log  {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.access.log main;
     error_log   {{ openresty_log_path | regex_replace("/$") }}/{{ item.server_name }}.error.log warn;
 
@@ -32,14 +26,16 @@ server {
     ssl_session_timeout 10m;
     {% endif %}
 
-    {% for loc in item.locations|default(default_locations) %}
-    location {{ loc.path }} {
-        {{ loc.config|indent(8) }}
-    }
-    {% endfor %}
-
-    {% if item.extra_parameters is defined %}
+    {% if item.extra_parameters|default('') %}
     {{ item.extra_parameters|indent(4) }}
+    {% else %}
+    location / {
+        {% if item.enable_fpm|default(false) %}
+        try_files $uri $uri/ /index.php?$request_uri;
+        {% else %}
+        try_files $uri $uri/ /main.html /index.html;
+        {% endif %}
+    }
     {% endif %}
 
     error_page  404              /404.html;
